@@ -4,11 +4,13 @@ const { response, request } = require('express');
 // const { response } = require('express');
 const express = require('express');
 
+require('dotenv').config();
+const PORT = process.env.PORT;
 const sweaterWeather = require('./assets/weather.json');
 
 const server = express();
 //we had to change it because both of them are working ocally
-const PORT = 3001;
+
 
 
 server.get('/weather',(request,response)=>{
