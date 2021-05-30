@@ -13,49 +13,81 @@ const server = express();
 
 server.use(cors()); //this makes my server opened for anyone to send requests
 
-server.get('/weather',(request,response)=>{
-// response.send(sweaterWeather);
-// let data = sweaterWeather;
-console.log(sweaterWeather);
-
-let cdirnames=sweaterWeather.data.map(element=>{
-return element.wind_cdir;
-});
-
-http://localhost:3001/sweaterWeather?WeatherWind_dir=80
-server.get('/getWeather',(request,response)=>{
+//localhost:3001/weather?cityName=amman
+server.get('/weather', (request, response) => {
     // response.send(sweaterWeather);
     // let data = sweaterWeather;
-    // console.log(sweaterWeather);
-    
-    let valObj=sweaterWeather.data.find(element=>{
-    if(element.wind_cdir=="E")
-        return element;
+
+try{
+
+    let city = request.query.cityName;
+    let arr = [];
+    let found = sweaterWeather.find(element => {
+
+        if (element.city_name.toLowerCase() == city.toLowerCase()) {
+            return element;
+        }
     });
-response.send(valObj);
+    found.data.forEach(element => {
+        arr.push(new cityWeather(element));
+    });
+    response.send(arr);
+}
+catch(error){
+    response.status(500).send("the data you're looking for isn't available");
+}
+
 });
 
-response.send(cdirnames);
-});
+//
+// console.log(sweaterWeather);
 
-http://localhost:3001/
-server.get('/',(request,response)=>{
-    let str="welcome to my home";
+// let cdirnames = sweaterWeather.data.map(element => {
+//     return element.wind_cdir;
+// });
+
+class cityWeather {
+    constructor(item) {
+        this.desciption = `max of ${item.max_temp} and low of ${item.min_temp} and it's description is: ${item.weather.description}`;
+        this.date = `${item.datetime}`;
+    }
+}
+//http://localhost:3001/sweaterWeather?WeatherWind_dir=80&max=70
+// let windDirection=request.query.WeatherWind_dir;
+// let maxTemp=request.query.max;
+
+// server.get('/getWeather', (request, response) => {
+//     // response.send(sweaterWeather);
+//     // let data = sweaterWeather;
+//     // console.log(sweaterWeather);
+
+//     let valObj = sweaterWeather.data.find(element => {
+//         if (element.wind_cdir == "E")
+//             return element;
+//     });
+//     response.send(valObj);
+// });
+
+// response.send(cdirnames);
+
+//http://localhost:3001/
+server.get('/', (request, response) => {
+    let str = "welcome to my home";
     response.send(str);
 });
 
-http://localhost:3001/test
-server.get('/test',(request,response)=>{
+//http://localhost:3001/test
+server.get('/test', (request, response) => {
     let str = "hello from backendsssss";
     // response.send(str);
     response.status(200).send(str);
 });
 
 //http://localhost:3001/asdasd
-server.get('*',(request,response)=>{
-response.status(404).send('not found man.. maybe try something we actually have in here instead..');
+server.get('*', (request, response) => {
+    response.status(404).send('not found man.. maybe try something we actually have in here instead..');
 });
-server.listen(PORT,()=>{
+server.listen(PORT, () => {
     console.log(`listening on PORT number ${PORT}`);
 });
 
@@ -88,35 +120,34 @@ server.listen(PORT,()=>{
 //             this.description = `low of ${item.min_temp}, hight of ${item.max_temp}, with ${item.weather.description}`;
 //         }
 //     }
-    
+
 //     async function weatherhandlers(req, res) {
 //         let key = process.env.WEATHER_API_KEY;
 //         let cityName = req.query.city_name;
-    
+
 //         let url = `https://api.weatherbit.io/v2.0/forecast/daily?city=${cityName}&key=${key}&days=4`
-    
+
 //         try {
 //             let result = await axios.get(url)
-    
+
 //             let forecastArr = result.data.data.map(item => {
 //                 return new Forecast(item);
 //                 // return newforecast;
 //             })
-    
+
 //             res.send(forecastArr);
 //             console.log(forecastArr);
 //         }
 //         catch (errors) {
-    
+
 //             res.send('error: the informition that you searched for it are not found ' + errors);
 //         }
-    
+
 //     }
 //     server.get('*', (req, res) => {
 //         res.send('not found');
 //     })
-    
+
 //     server.listen(PORT, () => {
 //         console.log(`listtening on PORT ${PORT}`)
 //     })
-    
