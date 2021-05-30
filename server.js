@@ -7,11 +7,11 @@ const express = require('express');
 require('dotenv').config();
 const PORT = process.env.PORT;
 const sweaterWeather = require('./assets/weather.json');
-
+const cors = require('cors');
 const server = express();
 //we had to change it because both of them are working ocally
 
-
+server.use(cors()); //this makes my server opened for anyone to send requests
 
 server.get('/weather',(request,response)=>{
 // response.send(sweaterWeather);
@@ -47,7 +47,8 @@ server.get('/',(request,response)=>{
 http://localhost:3001/test
 server.get('/test',(request,response)=>{
     let str = "hello from backendsssss";
-    response.send(str);
+    // response.send(str);
+    response.status(200).send(str);
 });
 
 //http://localhost:3001/asdasd
