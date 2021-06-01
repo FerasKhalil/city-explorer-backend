@@ -13,6 +13,13 @@ const server = express();
 
 server.use(cors()); //this makes my server opened for anyone to send requests
 
+
+class cityWeather {
+    constructor(item) {
+        this.description = `max of ${item.max_temp} and low of ${item.min_temp} and it's description is: ${item.weather.description}`;
+        this.date = `${item.datetime}`;
+    }
+}
 //localhost:3001/weather?cityName=amman
 server.get('/weather', (request, response) => {
     // response.send(sweaterWeather);
@@ -46,12 +53,7 @@ catch(error){
 //     return element.wind_cdir;
 // });
 
-class cityWeather {
-    constructor(item) {
-        this.desciption = `max of ${item.max_temp} and low of ${item.min_temp} and it's description is: ${item.weather.description}`;
-        this.date = `${item.datetime}`;
-    }
-}
+
 //http://localhost:3001/sweaterWeather?WeatherWind_dir=80&max=70
 // let windDirection=request.query.WeatherWind_dir;
 // let maxTemp=request.query.max;
