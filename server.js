@@ -12,8 +12,9 @@ const { default: axios } = require('axios');
 const server = express();
 //we had to change it because both of them are working ocally
 
-server.use(cors()); //this makes my server opened for anyone to send requests
 
+server.use(cors()); //this makes my server opened for anyone to send requests
+server.get('/movie', movieHandler);
 
 class cityWeather {
     constructor(item) {
@@ -65,6 +66,39 @@ class ForeCast {
         this.description = `low of ${constElement.low_temp}, high of ${constElement.max_temp} with ${constElement.weather.description}`
     }
 }
+
+
+function movieHandler(req,res){
+    let {searchQuery}=(req.query);
+    let movieKey=process.env.movies_key;
+    let url=`https://api.themoviedb.org/3/search/movie?api_key=${movieKey}&query=${searchQuery}`;
+    console.log(searchQuery,'outError',req.query);
+      axios
+    .get(url)
+    .then(result =>{
+        const movieArr = result.data.results.map(item => {
+         console.log('in result');
+            return new Movie(item)
+        })
+         res.send(movieArr)
+    }).catch(err => {
+console.log(searchQuery,'inError');
+        res.status(500).send(`error while getting data ${err}`);
+        })
+}
+
+function Movie (item){
+    this.title=item.title;
+    this.overview=item.overview;
+    this.average_votes=item.vote_average;
+    this.total_votes=item.vote_count;
+    this.image_url='https://image.tmdb.org/t/p/w500'+item.poster_path;
+    this.popularity=item.popularity;
+    this.released_on=item.release_date;
+   
+   }
+
+
 
 //
 // console.log(sweaterWeather);
