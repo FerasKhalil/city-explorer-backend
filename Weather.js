@@ -21,7 +21,7 @@ async function weatherHandler(request, response) {
     // response.send(sweaterWeather);
     // let data = sweaterWeather;
     let city = request.query.cityName;
-    console.log(city);
+    // console.log(city);
 
     let weatherURL = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${process.env.API_KEY}`;
     // console.log(weatherURL);
@@ -43,7 +43,7 @@ async function weatherHandler(request, response) {
         //     found.data.forEach(element => {
         //         arr.push(new cityWeather(element));
 
-        
+
 console.log(cityArr);
         //     });
         response.send(cityArr);
