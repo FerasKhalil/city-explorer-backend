@@ -1,7 +1,7 @@
 'use strict';
 require('dotenv').config();
 const { default: axios } = require('axios');
-
+let inMemory={};
 // const { response, request } = require('express');
 // const { response } = require('express');
 const express = require('express');
@@ -10,24 +10,55 @@ module.exports=movieHandler;
 
 
 
+// function movieHandler(req,res){
+//     let {searchQuery}=(req.query);
+//     let movieKey=process.env.movies_key;
+//     let url=`https://api.themoviedb.org/3/search/movie?api_key=${movieKey}&query=${searchQuery}`;
+//     console.log(searchQuery,'outError',req.query);
+//       axios
+//     .get(url)
+//     .then(result =>{
+//         const movieArr = result.data.results.map(item => {
+//          console.log('in result');
+//             return new Movie(item)
+//         })
+//          res.send(movieArr)
+//     }).catch(err => {
+// console.log(searchQuery,'inError');
+//         res.status(500).send(`error while getting data ${err}`);
+//         })
+// }
+
+
+
 function movieHandler(req,res){
-    let {searchQuery}=(req.query);
-    let movieKey=process.env.movies_key;
-    let url=`https://api.themoviedb.org/3/search/movie?api_key=${movieKey}&query=${searchQuery}`;
-    console.log(searchQuery,'outError',req.query);
-      axios
-    .get(url)
-    .then(result =>{
-        const movieArr = result.data.results.map(item => {
-         console.log('in result');
-            return new Movie(item)
-        })
-         res.send(movieArr)
-    }).catch(err => {
-console.log(searchQuery,'inError');
-        res.status(500).send(`error while getting data ${err}`);
-        })
+  let {searchQuery}=(req.query);
+  let movieKey=process.env.movies_key;
+  let url=`https://api.themoviedb.org/3/search/movie?api_key=${movieKey}&query=${searchQuery}`;
+  // console.log(searchQuery,'outError',req.query);
+  if (inMemory[searchQuery] !== undefined ){
+    res.send(inMemory[searchQuery])
+    console.log('in memory');
+  }else{
+    console.log('from API');
+  axios
+  .get(url)
+  .then(result =>{
+    const movieArr = result.data.results.map(item => {
+    //  console.log('in result');
+        
+    return new Movie(item)
+  })
+  res.send(movieArr)
+  inMemory[searchQuery] = (movieArr); 
+  }).catch(err => {
+  console.log(searchQuery,'inError');
+    res.status(500).send(`error in getting data ${err}`);
+    })
+  }
+  
 }
+
 
 function Movie (item){
   this.title=item.title;
