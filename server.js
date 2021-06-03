@@ -8,6 +8,7 @@ require('dotenv').config();
 const PORT = process.env.PORT;
 const sweaterWeather = require('./assets/weather.json');
 const cors = require('cors');
+const { default: axios } = require('axios');
 const server = express();
 //we had to change it because both of them are working ocally
 
@@ -21,30 +22,49 @@ class cityWeather {
     }
 }
 //localhost:3001/weather?cityName=amman
-server.get('/weather', (request, response) => {
+server.get('/weather', weatherHandler);
+async function weatherHandler(request, response) {
     // response.send(sweaterWeather);
     // let data = sweaterWeather;
-
-try{
-
     let city = request.query.cityName;
-    let arr = [];
-    let found = sweaterWeather.find(element => {
+    console.log(city);
 
-        if (element.city_name.toLowerCase() == city.toLowerCase()) {
-            return element;
-        }
-    });
-    found.data.forEach(element => {
-        arr.push(new cityWeather(element));
-    });
-    response.send(arr);
-}
-catch(error){
-    response.status(500).send("the data you're looking for isn't available");
-}
+    let weatherURL = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${process.env.API_KEY}`;
+    // console.log(weatherURL);
+    // console.log(weatherURL);
+    try {
+        let result4 = await axios.get(weatherURL);
+        // console.log(result4.data.data.length);
+        
+        let cityArr = result4.data.data.map(element => {
+            return new ForeCast(element);
+        });
 
-});
+        //     let found = sweaterWeather.find(element => {
+
+        //         if (element.city_name.toLowerCase() == city.toLowerCase()) {
+        //             return element;
+        //         }
+        //     });
+        //     found.data.forEach(element => {
+        //         arr.push(new cityWeather(element));
+console.log(cityArr);
+        //     });
+        response.send(cityArr);
+    }
+
+    catch (error) {
+        response.status(500).send("the data you're looking for isn't available");
+    }
+
+};
+
+class ForeCast {
+    constructor(constElement) {
+        this.date = constElement.valid_date;
+        this.description = `low of ${constElement.low_temp}, high of ${constElement.max_temp} with ${constElement.weather.description}`
+    }
+}
 
 //
 // console.log(sweaterWeather);
