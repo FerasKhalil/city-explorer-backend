@@ -12,91 +12,19 @@ const { default: axios } = require('axios');
 const server = express();
 //we had to change it because both of them are working ocally
 
-
+const movieHandler = require('./MovieHandler.js');
+const weatherHandler = require('./Weather.js');
 server.use(cors()); //this makes my server opened for anyone to send requests
 server.get('/movie', movieHandler);
 
-class cityWeather {
-    constructor(item) {
-        this.description = `max of ${item.max_temp} and low of ${item.min_temp} and it's description is: ${item.weather.description}`;
-        this.date = `${item.datetime}`;
-    }
-}
 //localhost:3001/weather?cityName=amman
 server.get('/weather', weatherHandler);
-async function weatherHandler(request, response) {
-    // response.send(sweaterWeather);
-    // let data = sweaterWeather;
-    let city = request.query.cityName;
-    console.log(city);
-
-    let weatherURL = `https://api.weatherbit.io/v2.0/forecast/daily?city=${city}&key=${process.env.API_KEY}`;
-    // console.log(weatherURL);
-    // console.log(weatherURL);
-    try {
-        let result4 = await axios.get(weatherURL);
-        // console.log(result4.data.data.length);
-        
-        let cityArr = result4.data.data.map(element => {
-            return new ForeCast(element);
-        });
-
-        //     let found = sweaterWeather.find(element => {
-
-        //         if (element.city_name.toLowerCase() == city.toLowerCase()) {
-        //             return element;
-        //         }
-        //     });
-        //     found.data.forEach(element => {
-        //         arr.push(new cityWeather(element));
-console.log(cityArr);
-        //     });
-        response.send(cityArr);
-    }
-
-    catch (error) {
-        response.status(500).send("the data you're looking for isn't available");
-    }
-
-};
-
-class ForeCast {
-    constructor(constElement) {
-        this.date = constElement.valid_date;
-        this.description = `low of ${constElement.low_temp}, high of ${constElement.max_temp} with ${constElement.weather.description}`
-    }
-}
 
 
-function movieHandler(req,res){
-    let {searchQuery}=(req.query);
-    let movieKey=process.env.movies_key;
-    let url=`https://api.themoviedb.org/3/search/movie?api_key=${movieKey}&query=${searchQuery}`;
-    console.log(searchQuery,'outError',req.query);
-      axios
-    .get(url)
-    .then(result =>{
-        const movieArr = result.data.results.map(item => {
-         console.log('in result');
-            return new Movie(item)
-        })
-         res.send(movieArr)
-    }).catch(err => {
-console.log(searchQuery,'inError');
-        res.status(500).send(`error while getting data ${err}`);
-        })
-}
 
-function Movie (item){
-    this.title=item.title;
-    this.overview=item.overview;
-    this.average_votes=item.vote_average;
-    this.total_votes=item.vote_count;
-    this.image_url='https://image.tmdb.org/t/p/w500'+item.poster_path;
-    this.popularity=item.popularity;
-    this.released_on=item.release_date;
-   
-   }
+
+
+
 
 
 
